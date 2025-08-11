@@ -59,7 +59,7 @@ jobs:
           fi
           az ml job show -n $run_id --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} --web 
           status=$(az ml job show -n $run_id --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} --query status -o tsv)
-          echo "Job Status 1 is $status"
+          echo "Job Status 1 is " $status
           if [[ -z "$status" ]]
           then
             echo "Status query failed"
