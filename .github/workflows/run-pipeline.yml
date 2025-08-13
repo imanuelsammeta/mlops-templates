@@ -49,6 +49,11 @@ jobs:
         run: az extension add -n ml -y
       - name: update-extension
         run: az extension update -n ml
+      - name: Debug-workspace-files
+        run: |
+          pwd
+          ls -la
+          ls -la mlops/azureml/train || true
       - name: run-ml-pipeline
         run: |
           run_id=$(az ml job create --file ${{ github.workspace }}/${{ inputs.parameters-file  }} --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} --query name -o tsv)
