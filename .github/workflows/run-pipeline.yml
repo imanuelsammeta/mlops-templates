@@ -53,18 +53,18 @@ jobs:
         run: |
           echo "=== Environments ==="
           az ml environment list \
-          --resource-group mlops-rg \
-          --workspace-name FitwellWorkspace \
+          --resource-group ${{ inputs.resource_group }} \
+          --workspace-name ${{ inputs.workspace_name }} \
           -o table
           echo "=== Data assets ==="
           az ml data list \
-          --resource-group mlops-rg \
-          --workspace-name FitwellWorkspace \
+          --resource-group ${{ inputs.resource_group }} \
+          --workspace-name ${{ inputs.workspace_name }} \
           -o table
           echo "=== Computes ==="
           az ml compute list \
-          --resource-group mlops-rg \
-          --workspace-name FitwellWorkspace \
+          --resource-group ${{ inputs.resource_group }} \
+          --workspace-name ${{ inputs.workspace_name }} \
           -o table
       - name: Validate-Pipeline
         run: az ml job validate --file mlops/azureml/train/pipeline.yml --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }}
