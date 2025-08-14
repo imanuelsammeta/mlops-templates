@@ -103,17 +103,12 @@ jobs:
           do
             sleep 15 
             status=$(az ml job show -n $run_id --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} --query status -o tsv)
-            echo $status  ${running[*]}
+            echo $status
           done
           if [[ "$status" != "Completed" ]]  
           then
-            echo "Training Job failed or canceled with the job status $status"
+            az ml job stream -n "$run_id" --all-logs --tail 200 || true
+            echo "Training Job failed or canceled with the job status $status"  
             exit 3
           fi
           echo "=== Pipeline run completed successfully ==="
-      - name: Tail-child-job-logs
-        if: ${{ failure() && steps.submit.outputs.run_id != '' }}
-        shell: bash
-        run: |
-          echo "Tailing logs for job: $RUN_ID"
-          az ml job stream -n "$RUN_ID" --all-logs --tail 200 || true
