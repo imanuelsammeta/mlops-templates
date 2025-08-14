@@ -52,11 +52,11 @@ jobs:
       - name: Show referenced assets/compute
         run: |
           echo "=== Environments ==="
-          az ml environment list -o table
+          az ml environment --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} list -o table
           echo "=== Data assets ==="
-          az ml data list -o table
+          az ml data --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} list -o table
           echo "=== Computes ==="
-          az ml compute list -o table
+          az ml compute --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} list -o table
       - name: Validate-Pipeline
         run: az ml job validate --file mlops/azureml/train/pipeline.yml --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }}
       - name: run-ml-pipeline
