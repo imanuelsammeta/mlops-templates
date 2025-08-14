@@ -82,6 +82,9 @@ jobs:
           echo "=== Submitting job ==="
           run_id=$(az ml job create --file ${{ github.workspace }}/${{ inputs.parameters-file  }} --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} --verbose --query name -o tsv)
           echo "Job ID returned: $run_id"
+
+          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "RUN_ID=$RUN_ID" >> "$GITHUB_ENV"
           if [[ -z "$run_id" ]]
           then
             echo "Job creation failed"
@@ -109,5 +112,8 @@ jobs:
           fi
           echo "=== Pipeline run completed successfully ==="
       - name: Tail-child-job-logs
+        if: ${{ failure() && steps.submit.outputs.run_id != '' }}
+        shell: bash
         run: |
-          az ml job stream -n "$run_id" --all-logs --tail 200 || true
+          echo "Tailing logs for job: $RUN_ID"
+          az ml job stream -n "$RUN_ID" --all-logs --tail 200 || true
