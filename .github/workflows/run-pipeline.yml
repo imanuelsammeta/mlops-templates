@@ -66,8 +66,6 @@ jobs:
           --resource-group ${{ inputs.resource_group }} \
           --workspace-name ${{ inputs.workspace_name }} \
           -o table
-      - name: Validate-Pipeline
-        run: az ml job validate --file mlops/azureml/train/pipeline.yml --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }}
       - name: run-ml-pipeline
         run: |
           echo "=== Starting Azure ML pipeline run ==="
@@ -107,8 +105,10 @@ jobs:
           done
           if [[ "$status" != "Completed" ]]  
           then
-            az ml job stream -n "$run_id" --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} --all-logs --tail 200 || true
+            echo "============================= Debug Starts ================================"
+            az ml job stream -n "$run_id" --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} --debug
             echo "Training Job failed or canceled with the job status $status"  
+            echo "============================= Debug Ends ================================"
             exit 3
           fi
           echo "=== Pipeline run completed successfully ==="
