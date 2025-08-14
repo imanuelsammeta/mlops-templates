@@ -50,7 +50,7 @@ jobs:
       - name: update-extension
         run: az extension update -n ml
       - name: Validate-Pipeline
-        run: az ml job validate --file mlops/azureml/train/pipeline.yml
+        run: az ml job validate --file mlops/azureml/train/pipeline.yml --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }}
       - name: run-ml-pipeline
         run: |
           run_id=$(az ml job create --file ${{ github.workspace }}/${{ inputs.parameters-file  }} --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} --query name -o tsv)
