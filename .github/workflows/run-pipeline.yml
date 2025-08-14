@@ -70,7 +70,18 @@ jobs:
         run: az ml job validate --file mlops/azureml/train/pipeline.yml --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }}
       - name: run-ml-pipeline
         run: |
+          echo "=== Starting Azure ML pipeline run ==="
+          echo "Workspace: ${{ inputs.workspace_name }}"
+          echo "Resource Group: ${{ inputs.resource_group }}"
+          echo "Pipeline file: ${{ github.workspace }}/${{ inputs.parameters-file }}"
+          echo "Listing files in working directory for sanity:"
+          ls -la
+          echo "Listing pipeline file details:"
+          ls -la "${{ github.workspace }}/${{ inputs.parameters-file }}" || echo "Pipeline file not found!"
+
+          echo "=== Submitting job ==="
           run_id=$(az ml job create --file ${{ github.workspace }}/${{ inputs.parameters-file  }} --resource-group ${{ inputs.resource_group }} --workspace-name ${{ inputs.workspace_name }} --verbose --query name -o tsv)
+          echo "Job ID returned: $run_id"
           if [[ -z "$run_id" ]]
           then
             echo "Job creation failed"
@@ -96,3 +107,7 @@ jobs:
             echo "Training Job failed or canceled with the job status $status"
             exit 3
           fi
+          echo "=== Pipeline run completed successfully ==="
+      - name: Tail-child-job-logs
+        run: |
+          az ml job stream -n "$run_id" --all-logs --tail 200 || true
